@@ -6,7 +6,11 @@ patch:
     # - lua_filter@*aux_code@flypy_full
 
   # 允许以 `;` 符号上屏，最后的 `;` 为英文半角字符，非中文全角。前面部分根据个人配置自行调整
-  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA;
+  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA/
+  
+  # 自定义触发键，注意：请确保所选字符已包含在上述 speller/alphabet 的值中
+  key_binder/+:
+    aux_code_trigger: "/"
 
   # （按需选择）清空 preedit_format 中的内容，输入时显示双拼编码
   translator/preedit_format: []
