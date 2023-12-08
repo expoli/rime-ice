@@ -129,6 +129,10 @@ app_options:
 # "style/+":
 #   __include: "weasel_style:/style_inline_horizontal"
 style_inline_horizontal:
+  font_face: "LXGW WenKai GB Screen"
+  label_font_face: "LXGW WenKai GB Screen"
+  comment_font_face: "LXGW WenKai GB Screen"
+  label_font_point: 14
   font_point: 14
   comment_font_point: 13
   inline_preedit: true
