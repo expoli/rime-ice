@@ -54,7 +54,7 @@ style:
   # 感谢 luminosara https://github.com/LufsX/rime/pull/22、https://github.com/LufsX/rime/pull/26
   # __include: "win10_preset"
 
-  color_scheme: win10_MDL_ayaya # 颜色方案
+  color_scheme: ayaya # 颜色方案
 
 preset_color_schemes:
   ayaya:
