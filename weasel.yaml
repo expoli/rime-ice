@@ -12,7 +12,7 @@ app_options:
 
 style:
   antialias_mode: default # 抗锯齿模式
-  ascii_tip_follow_cursor: false # ASCII提示跟随光标
+  ascii_tip_follow_cursor: true # ASCII提示跟随光标
   display_tray_icon: false # 显示系统托盘图标
 
   fullscreen: false # 全屏候选词窗口
@@ -29,6 +29,8 @@ style:
   label_font_point: 14 # 标签字体大小
   comment_font_point: 13 # 注释字体大小
   mark_text: "" # 标记文本
+
+  enhanced_position: true
 
   vertical_auto_reverse: false # 垂直排列时自动反转顺序
   vertical_text: false # 垂直文本显示
@@ -51,7 +53,7 @@ style:
   # 感谢 luminosara https://github.com/LufsX/rime/pull/22、https://github.com/LufsX/rime/pull/26
   # __include: "win10_preset"
 
-  color_scheme: ayaya # 颜色方案
+  color_scheme: win10_MDL_ayaya # 颜色方案
 
 preset_color_schemes:
   ayaya:
@@ -241,25 +243,25 @@ win11_preset:
   label_format: "\u2005\u2006%s" # 候选词标签格式
   layout:
     align_type: center # 布局对齐方式
-    max_width: 0 # 最大宽度限制
+    max_width: 1080 # 最大宽度限制
     min_width: 160 # 最小宽度限制
     min_height: 0 # 最小高度限制
-    max_height: 0 # 最大高度限制
+    max_height: 600 # 最大高度限制
     border_width: 1 # 窗口边框宽度
-    margin_x: 16 # 窗口左右边距
-    margin_y: 14 # 窗口上下边距
-    spacing: 18 # 候选词间距
-    hilite_spacing: 14 # 高亮显示间距
+    margin_x: 8 # 窗口左右边距
+    margin_y: 8 # 窗口上下边距
+    spacing: 5 # 候选词间距
+    hilite_spacing: 8 # 高亮显示间距
     shadow_offset_x: 6 # 阴影 X 轴偏移
 
-    candidate_spacing: 25 # 候选词内部间距
-    corner_radius: 12 # 候选圆角半径
-    hilite_padding: 5 # 高亮高度
+    candidate_spacing: 10 # 候选词内部间距
+    corner_radius: 8 # 候选圆角半径
+    hilite_padding: 2 # 高亮高度
     hilite_padding_x: 7 # 高亮 X 横向方向边距
     hilite_padding_y: 6 # 高亮 Y 纵向方向边距
-    round_corner: 12 # 高亮圆角
+    round_corner: 8 # 高亮圆角
     shadow_offset_y: 6 # 阴影 Y 轴偏移
-    shadow_radius: 13 # 阴影半径
+    shadow_radius: 4 # 阴影半径
 
 win10_preset:
   label_format: "%s" # 候选词标签格式
