@@ -22,7 +22,7 @@ style:
   paging_on_scroll: false # 鼠标滚轮翻页候选词
 
   horizontal: true # 水平排列候选词
-  font_face: Segoe UI Emoji:30:39, Noto Color Emoji, Microsoft YaHei # 主要字体
+  font_face: "Segoe UI Emoji:20:39, Segoe UI Emoji:1f51f:1f51f, Noto Color Emoji SVG:80, Segoe UI Emoji:80, LXGW Wenkai" # 主要字体
   label_font_face: Microsoft YaHei # 标签字体
   comment_font_face: Microsoft YaHei # 注释字体
   font_point: 14 # 主要字体大小
@@ -30,7 +30,8 @@ style:
   comment_font_point: 13 # 注释字体大小
   mark_text: "" # 标记文本
 
-  enhanced_position: true
+  layout:
+    enhanced_position: true # 允许在光标位置获取失败时于窗口左上角绘制候选框（而不是桌面左上角）
 
   vertical_auto_reverse: false # 垂直排列时自动反转顺序
   vertical_text: false # 垂直文本显示
