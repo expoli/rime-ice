@@ -43,7 +43,7 @@ style:
 
   # Windows 11 风格预设
   # 感谢 luminosara https://github.com/LufsX/rime/pull/22、https://github.com/LufsX/rime/pull/26
-  __include: "win11_preset"
+  __include: "my_test"
 
   # Windows 10 MDL2 风格预设
   # 此项风格建议使用 win10_MDL 为前缀的配色方案
@@ -263,6 +263,21 @@ win11_preset:
     round_corner: 8 # 高亮圆角
     shadow_offset_y: 6 # 阴影 Y 轴偏移
     shadow_radius: 4 # 阴影半径
+
+my_test:
+  layout:
+    align_type: center
+    max_width: 1080 
+    max_height: 600
+    type: horizontal
+    border_width: 2
+    margin_x: 8
+    margin_y: 8
+    candidate_spacing: 20
+    hilite_padding: 8
+    hilite_spacing: 2
+    corner_radius: 8
+    round_corner: 8
 
 win10_preset:
   label_format: "%s" # 候选词标签格式

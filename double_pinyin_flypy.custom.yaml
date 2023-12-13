@@ -2,6 +2,7 @@ patch:
   engine/filters/+:
     # 第二个 @ 后面的是辅助码文件路径，可以自定义
     - lua_filter@aux_code@rime_lua_aux_code/lua/flypy_full
+    - lua_filter@is_in_user_dict
     # - lua_filter@*aux_code@ZRM_Aux-code_4.3
     # - lua_filter@*aux_code@flypy_full
 
@@ -11,6 +12,8 @@ patch:
   # 自定义触发键，注意：请确保所选字符已包含在上述 speller/alphabet 的值中
   key_binder/+:
     aux_code_trigger: "/"
+
+  is_in_user_dict: true
 
   # （按需选择）清空 preedit_format 中的内容，输入时显示双拼编码
   translator/preedit_format: []
