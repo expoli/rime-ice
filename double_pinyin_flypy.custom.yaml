@@ -18,4 +18,4 @@ patch:
   # （按需选择）清空 preedit_format 中的内容，输入时显示双拼编码
   translator/preedit_format: []
 
-  lunar: Nl
+  lunar: NL
