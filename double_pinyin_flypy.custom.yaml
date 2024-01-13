@@ -18,4 +18,9 @@ patch:
   # （按需选择）清空 preedit_format 中的内容，输入时显示双拼编码
   translator/preedit_format: []
 
+  # 农历脚本的配置
   lunar: NL
+  # 大写字母的触发配置
+  recognizer:
+    patterns:
+      number: "^R[0-9]+[.]?[0-9]*"      # 响应 number_translator
