@@ -23,4 +23,4 @@ patch:
   # 大写字母的触发配置
   recognizer:
     patterns:
-      number: "^R[0-9]+[.]?[0-9]*"      # 响应 number_translator
+      number: "^D[0-9]+[.]?[0-9]*"      # 响应 number_translator
