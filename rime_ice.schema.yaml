@@ -6,7 +6,7 @@
 schema:
   schema_id: rime_ice
   name: 雾凇拼音
-  version: "2024-02-01"
+  version: "2024-02-06"
   author:
     - Dvel
   description: |
@@ -18,8 +18,9 @@ schema:
 
 
 # 开关
-# states: 方案选单显示的名称。可以注释掉，仍可以通过快捷键切换。
 # reset: 默认状态。注释掉后，切换窗口时不会重置到默认状态。
+# states: 方案选单显示的名称。可以注释掉，仍可以通过快捷键切换。
+# abbrev: 默认的缩写取 states 的第一个字符，abbrev 可自定义一个字符
 switches:
   - name: ascii_mode
     states: [ 中, Ａ ]
@@ -32,7 +33,7 @@ switches:
     reset: 1
   - name: full_shape
     states: [ 半角, 全角 ]
-  - name: single_char  # search.lua 的功能开关，辅码查词时是否单字优先
+  - name: search_single_char  # search.lua 的功能开关，辅码查词时是否单字优先
     abbrev: [词, 单]
     states: [正常, 单字]
 
@@ -41,8 +42,8 @@ switches:
 engine:
   processors:
     - lua_processor@select_character          # 以词定字
-    - lua_processor@auto_commit_single_punct  # 让写在 alphabet 中的某标点自动上屏
     - ascii_composer
+    - lua_processor@auto_commit_single_punct  # 让写在 alphabet 中的某标点自动上屏
     - recognizer
     - key_binder
     - speller
@@ -64,9 +65,11 @@ engine:
     - lua_translator@lunar              # 农历
     - table_translator@custom_phrase    # 自定义短语 custom_phrase.txt
     - table_translator@melt_eng         # 英文输入
+    - table_translator@cn_en            # 中英混合词汇
     - table_translator@radical_lookup   # 部件拆字反查
     - lua_translator@unicode            # Unicode
     - lua_translator@number_translator  # 数字、金额大写
+    - lua_translator@force_gc           # 暴力 GC
   filters:
     - lua_filter@corrector                          # 错音错字提示
     - simplifier@emoji                              # Emoji
@@ -77,6 +80,7 @@ engine:
     - lua_filter@autocap_filter                     # 英文自动大写
     - lua_filter@reduce_english_filter              # 降低部分英语单词在候选项的位置
     - lua_filter@pin_cand_filter                    # 置顶候选项
+    - lua_filter@long_word_filter                   # 长词优先
     - uniquifier                                    # 去重
 
 
@@ -91,6 +95,14 @@ date_translator:
 
 # Lua 配置：农历的触发关键字
 lunar: nl  # 农历： 二〇二三年冬月二十 癸卯年（兔）冬月二十
+
+
+# Lua 配置：长词优先
+# 提升 count 个词语，插入到第 idx 个位置。
+# 示例：将 2 个词插入到第 4、5 个候选项，输入 jie 得到「1接 2解 3姐 4饥饿 5极恶」
+long_word_filter:
+  count: 2
+  idx: 4
 
 
 # Lua 配置：直接上屏单个字符
@@ -119,75 +131,91 @@ reduce_english_filter:
   idx: 2        # 降低到第 idx 个位置
   # 自定义的单词列表，示例列表没有降低部分常用单词，如 and cat mail Mac but bad shit ……
   words: [aid, ann,
-  bail, bait, bam, band, bans, bat, bay, bend, bent, benz, bib, bid, bien, biz, boc, bop, bos, bud, buf,
-  cab, cad, cain, cam, cans, cap, cas, cef, chad, chan, chap, chef, cher, chew, chic, chin, chip, chit, coup, cum, cunt, cur,
+  bail, bait, bam, band, bans, bat, bay, bend, bent, benz, bib, bid, bien, biz, boc, bop, bos, bud, buf, bach, bench, bush,
+  cab, cad, cain, cam, cans, cap, cas, cef, chad, chan, chap, chef, cher, chew, chic, chin, chip, chit, coup, cum, cunt, cur, couch,
   dab, dag, dal, dam, dent, dew, dial, diet, dim, din, dip, dis, dit, doug, dub, dug, dunn,
   fab, fax, fob, fog, foul, fur,
   gag, gail, gain, gal, gam, gaol, ged, gel, ger, guam, gus, gut,
-  hail, ham, hank, hans, hat, hay, heil, heir, hem, hep, hud, hum, hung, hunk, hut,
+  hail, ham, hank, hans, hat, hay, heil, heir, hem, hep, hud, hum, hung, hunk, hut, hush,
   jim, jug,
   kat,
-  lab, lad, lag, laid, lam, laos, lap, lat, lax, lay, led, leg, lex, liam, lib, lid, lied, lien, lies, linn, lip, lit, liz, lob, lug, lund, lung, lux,
-  mag, maid, mann, mar, mat, med, mel, mend, mens, ment, mil, mins, mint, mob, moc, mop, mos, mot, mud, mug, mum, nail,
-  nap, nat, nay, neil, nib, nip, noun, nous, nun, nut,
-  pac, paid, pail, pain, pair, pak, pal, pam, pans, pant, pap, par, pat, paw, pax, pens, pic, pier, pies, pins, pint, pit, pix, pod, pop, pos, pot, pour, pow, pub,
-  rand, rant, rent, rep, res, ret, rex, rib, rid, rig, rim, rub, rug, rum, runc, runs,
+  lab, lad, lag, laid, lam, laos, lap, lat, lax, lay, led, leg, lex, liam, lib, lid, lied, lien, lies, linn, lip, lit, liz, lob, lug, lund, lung, lux, lash, loch, lush,
+  mag, maid, mann, mar, mat, med, mel, mend, mens, ment, mil, mins, mint, mob, moc, mop, mos, mot, mud, mug, mum, mesh,
+  nap, nat, nay, neil, nib, nip, noun, nous, nun, nut, nail, nash,
+  pac, paid, pail, pain, pair, pak, pal, pam, pans, pant, pap, par, pat, paw, pax, pens, pic, pier, pies, pins, pint, pit, pix, pod, pop, pos, pot, pour, pow, pub, pinch, pouch,
+  rand, rant, rent, rep, res, ret, rex, rib, rid, rig, rim, rub, rug, rum, runc, runs, ranch,
   sac, sail, sal, sam, sans, sap, saw, sax, sew, sham, shaw, shin, sig, sin, sip, sis, suit, sung, suns, sup, sur, sus,
   tad, tail, taj, tar, tax, tec, ted, tel, ter, tex, tic, tied, tier, ties, tim, tin, tit, tour, tout, tum,
   wag, wand, womens, wap, wax, weir, won,
-  yan, yen]
+  yan, yen,
+  zach]
 
 
 # Lua 配置: 置顶候选项
-# 符合左边的 cand.preedit 时，按顺序置顶右边的候选项。只是提升已有候选项的顺序，没有自创编码的功能。
-# （对简繁转换无效，除非简繁文字一致 😰）
-#
-# preedit 是经过 translator/preedit_format 处理后的编码，如果是词语则包含空格。
+# 符合左边的编码(cand.preedit)时，按顺序置顶右边的候选项。只是提升已有候选项的顺序，没有自创编码的功能。
+# 脚本对比的是去掉空格的 cand.preedit，配置里写空格可以生成额外的编码，参考示例。
+# 
+# cand.preedit 是经过 translator/preedit_format 转换后的编码
 # ⚠️ 注意方案的 preedit_format 设定，如果 v 显示为 ü，那么左边也要写 ü
-# ⚠️ 双拼 ⚠️ 显示为全拼拼写就要写全拼，如 'shuang pin'，显示为双拼拼写就要写双拼，如 'ul pb' 😰
+# ⚠️ 双拼：显示为全拼拼写就要写全拼，如 'shuang pin'，显示为双拼拼写就要写双拼，如 'ul pb'
 #
-# 脚本自动额外生成 preedit 中最后一个空格后面的首字母和 zh ch sh，
-# 如 'ni hao' 会自动生成 'ni hao'、'ni h'
-# 如 'bu hao chi' 会自动生成 'bu hao chi'、'bu hao c'、'bu hao ch'
-# 如果同时写了 da zhuan 和 da zhong，输入 da z 时，排在前面的的优先，除非明确指定 'da z'。
+# 格式：编码<Tab>字词1<Space>字词2……
+# 按照 YAML 语法，加不加引号都行，也可以这么写 pin_cand_filter: [l	了, 'de	的', "ni hao	你好"]
+#
+# 示例：
+# - 'le	了'       # 输入 le 时，置顶「了」
+# - 'la	啦'       # 输入 la 时，置顶「啦」
+# - 'ta	他 她 它'  # 可以置顶多个字，按顺序排列
+# - 'ta	啊'       # ❌ 编码不会产生的字词，不会生效且影响查找效率。自创编码的字词句可以写到 custom_phrase 中。
+# - 'l	了 啦'    # 支持单编码，输入 l 时，置顶「了、啦」
+#
+### 简拼
+# 支持简拼，简拼加不加空格都行。但需要方案开启简拼，雾凇全拼是默认开启的，双拼默认没开启
+# - s m	什么
+# - wsm	为什么
+#
+### Emoji
+# 如果词汇有 emoji 映射，在调整排序后，相关 emoji 失去吸附效果，所以要将 emoji 也纳入
+# - kan	看 👀
+# - ni hao	你好 👋 拟好
+#
+### 空格的作用：
+# 不包含空格，只生成原样：
+# - 'nihao	你好'  # 只生成 nihao，只有输入完整编码时才起作用，输入 nihao 时首位是「你好」，但输入 nih 时首位可能是「你会 你还」等其他词语
+# 包含空格的词组，额外生成最后一个空格后的拼音的首字母简码：
+# - 'ni hao	你好' # 生成 nihao  nih
+# 包含空格的词组，且结尾以 zh ch sh 开头，再额外生成最后一个空格后的拼音的 zh ch sh 简码：
+# - 'bu hao chi	不好吃'  # 生成 buhaochi  buhaoc  buhaoch
+#
+### 优先级：
+# 以下两行，会额外生成 'da z' 'da zh' 的置顶，前两个候选项是「大专、大众」，先写的排在前面
+# - da zhuang	大专
+# - da zhong	大众
+# 如果明确定义了简码形式，则完全使用简码形式
+# - da z	打字
+# - da zh	打仗
 pin_cand_filter:
   # 格式：编码<Tab>字词1<Space>字词2……
-  # 示例：
-  # - 'le	了'         # 输入 le 时，置顶「了」
-  # - 'la	啦'         # 输入 la 时，置顶「啦」
-  # - 'ta	他 她 它'    # 可以置顶多个字，按顺序排列
-  # - 'ta	啊'         # ❌ 编码不会产生的字词，不会生效且影响查找效率。自创编码的字词句可以写到 custom_phrase 中。
-  # - 'l	了 啦'      # 支持单编码或输入到一半的编码，输入 l 时，置顶「了、啦」
-  # - 's m	什么'       # 支持简拼，要和输入框的行为一致，有空格加空格
-  # - 'w s m	为什么' # 支持简拼，要和输入框的行为一致，有空格加空格
-  # - 'ni hao	你好 👋 拟好'  # 如果 emoji 被分割开了，可以任意调整 emoji 的位置
-  # # 以下两行，会额外生成 'da z' 'da zh' 的置顶，前两个候选项是「大专、大众」，先写的排在前面
-  # - da zhuang	大专
-  # - da zhong	大众
-  # # 如果明确定义了简码形式，则完全使用简码形式
-  # - da z	打字
-  # - da zh	打仗
-  #
   # ⚙️ 以下是个人习惯，仅供参考，可以打个补丁来覆盖。
   # 单编码
   - q	去 千
   - w	我 万 往
-  - e	呃
+  - e	呃 🤔
   - r	让 人
   - t	他 她 它 祂
   - y	与 于
-  # - u 在 custom_phrase 置顶
-  # - i 在 custom_phrase 置顶
-  - o	哦
+  # - u 在 custom_phrase 置顶了 有 🈶 又 由
+  # - i 在 custom_phrase 置顶了 一 1️⃣ 以 已 亦
+  - o	哦 😮
   - p	片 篇
-  - a	啊
+  - a	啊 😲 😦 😧
   - s	是 时 使 式
-  - d	的 地 得
+  - d	的 地 得 🉐
   - f	发 放 分
   - g	个 各
   - h	和 或
   - j	及 将 即 既 继
-  - k	可
+  - k	可 🉑
   - l	了 啦 喽 嘞
   - z	在 再 自
   - x	想 像 向
@@ -196,42 +224,86 @@ pin_cand_filter:
   - b	吧 把 呗 百
   - n	那 哪 拿 呐
   - m	吗 嘛 呣
-  # 单字
-  - de	的 地 得
-  - na	那 哪 拿
+  # 常用单字
+  - qing	请
+  - qu	去
+  - wo	我
+  - wei	为
+  - er	而 儿 二 2️⃣
+  - en	嗯
+  - rang	让
   - ta	他 她 它 祂
-  - er	而 儿 二
-  - ma	吗 嘛 妈
-  - zhe	这 着
-  - hai	还
-  - you	有 🈶 又 由
-  - mei	没
-  - bing	并
+  - tai	太
   - tong	同
   - yu	与 于
-  - he	和
-  - ji	及 即 既
-  - shi	是 时
-  - la	啦 拉
-  - xing	行
-  - dian	点
+  - you	有 🈶 又 由
   - yao	要
-  - kan	看
-  - bei	被
-  - zuo	做
+  - ye	也
+  - shi	是 时 使 式
+  - suo	所
+  - shang	上 ⬆️ ↑
+  - shuo	说
+  - de	的 地 得 🉐
+  - dan	但
+  - dou	都
   - dao	到 倒
-  - xiang	想 像 向
-  - zhi	只
-  - cai	才
+  - dian	点 · 丶
+  - dang	当
+  - dui	对 ⭕ ✅ ✔
+  - fa	发
+  - ge	个 各
   - gang	刚
+  - he	和
+  - huo	或
+  - hui	会
+  - hai	还
+  - hao	好 👌 🙆‍♂️ 🙆‍♀️
+  - ji	及 即 既
   - jiu	就
+  - jiang	将
+  - ke	可 🉑
+  - kan	看 👀
+  - kai	开
+  - le	了
+  - la	啦 拉
+  - lai	来
+  - li	里
+  - zai	在 再
+  - zhi	只
+  - zhe	这 着
+  - zhen	真
+  - zui	最
+  - zheng	正
+  - zuo	做 坐 左 ⬅️ ←
+  - ze	则
+  - xiang	想 像 向
+  - xian	先
+  - xia	下 ⬇️ ↓
+  - xing	行
+  - cai	才
+  - cong	从
+  - chu	出
+  - ba	吧 把
+  - bu	不
+  - bing	并
+  - bei	被
+  - bie	别
+  - bi	比
+  - bing	并
+  - na	那 哪 拿 呐
+  - ni	你
+  - ma	吗 嘛 妈
+  - mei	没
+  - mai	买 卖
   # ta、na
-  - ta de	他的 她的 它的
-  - 'tad	他的 她的 它的'  # 英文单词 tad 造成 preedit 为 tad，从而让 ta d 的置顶未生效，需要明确再写上 tad
   - ta men	他们 她们 它们
+  - tm	他们 她们 它们
+  - ta de	他的 她的 它的
+  - td	他的 她的 它的
   - ta men de	他们的 她们的 它们的
   - na er	那儿 哪儿
   - na ge	那个 哪个
+  - ng	那个 哪个 拿个
   - na xie	那些 哪些
   - na li	那里 哪里
   - na bian	那边 哪边
@@ -239,28 +311,25 @@ pin_cand_filter:
   - na wei	那位 哪位
   # 简码
   - zh	这
-  - d d	等等
-  - 'dd	等等'  # 覆盖英文单词 D&D
-  - d d d d	等等等等
-  - g g	刚刚
-  - c g g	才刚刚
-  - z d	知道
-  - b z d	不知道
-  - w w	往往
-  - h h	哈哈
-  - k k	看看
-  - c c	常常
-  - x x	想想 🤔 想象
-  - y w	因为
-  - s m	什么
-  - w s m	为什么
-  - s b s	是不是
-  - m s m	没什么
-  - s m d	什么的
-  - s m s	什么是
-  - 'sms	什么是'  # 覆盖英文单词 SMS
-  - s m a	什么啊
-  - 'sma	什么啊'  # 覆盖英文单词 S码
+  - dd	等等
+  - dddd	等等等等
+  - gg	刚刚
+  - cgg	才刚刚
+  - zd	知道
+  - bzd	不知道
+  - ww	往往
+  - hh	哈哈
+  - kk	看看
+  - cc	常常
+  - xx	想想 🤔 想象
+  - yw	因为
+  - sm	什么
+  - wsm	为什么
+  - sbs	是不是
+  - msm	没什么
+  - smd	什么的
+  - sms	什么是
+  - sma	什么啊
 
 
 # 主翻译器，拼音
@@ -285,6 +354,18 @@ melt_eng:
   initial_quality: 1.1     # 初始权重
   comment_format:          # 自定义提示码
     - xform/.*//           # 清空提示码
+
+
+# 中英混合词汇
+cn_en:
+  dictionary: ""
+  user_dict: en_dicts/cn_en
+  db_class: stabledb
+  enable_completion: true
+  enable_sentence: false
+  initial_quality: 1.1
+  comment_format:
+    - xform/^.+$//
 
 
 # 自定义短语：custom_phrase.txt
@@ -338,7 +419,9 @@ radical_lookup:
 # 部件拆字滤镜
 radical_reverse_lookup:
   tags: [ radical_lookup ]
-  dictionary: rime_ice  # 拼音标注来源，可将 other/single_pinyin.reverse.bin 拷贝至 build/ 目录，此处改为 single_pinyin 来为所有字显示拼音
+  # dictionary 为拼音标注来源。目前是显示本方案词库的注音，可去部件拆字方案下载更全的、带声调的、已编译好的词典
+  # https://github.com/mirtlecn/rime-radical-pinyin?tab=readme-ov-file#%E5%8F%8D%E6%9F%A5%E5%B8%A6%E5%A3%B0%E8%B0%83%E6%B3%A8%E9%9F%B3
+  dictionary: rime_ice
   # comment_format:     # 自定义 comment，例如在左右加上括号
   #  - xform/^/(/
   #  - xform/$/)/
@@ -422,11 +505,11 @@ speller:
     - abbrev/^([zcs]h).+$/$1/  # 超级简拼中，zh ch sh 视为整体（ch'sh → 城市），而不是像这样分开（c'h's'h → 吃好睡好）。
 
     ### v u 转换
-    # 雾凇的词库严格按照正确的 u v(ü) 注音的，如 qu 和 nve，支持使用 qv 和 nue 来输入
-    # 再增加对其他词库的 qv nue 这种注音的支持
-    - derive/^([nl])ue$/$1ve/
+    # 雾凇的词库严格按照正确的 u v(ü) 注音的，支持使用 qu/qv nue/nve 来输入 qu nve
     - derive/^([nl])ve$/$1ue/
     - derive/^([jqxy])u/$1v/
+    # 以防引入的其他词库没按照正确方式注音，也做一个转换
+    - derive/^([nl])ue$/$1ve/
     - derive/^([jqxy])v/$1u/
 
     ### 自动纠错

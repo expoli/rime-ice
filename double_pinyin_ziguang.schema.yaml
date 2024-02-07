@@ -8,9 +8,8 @@
 # 全拼的自定义文本和双拼有些冲突，改成了 custom_phrase_double ，需要创建 custom_phrase_double.txt 文件。
 #
 # 目前配置中有个别功能仍然是全拼拼写，不能自动适配，所以需要手动修改一下：
-# 1. 中英混输词库的拼写：     在英文词库文件 melt_eng.dict.yaml 修改为对应的双拼词库
-# 2. 英文中部分符号的派生规则：在英文方案文件 melt_eng.schema.yaml > speller > algebra 修改为对应的双拼拼写运算
-# 3. 部件拆字的拼写规则：     在部件拆字方案 radical_pinyin.schema.yaml > speller > algebra 修改为对应的双拼拼写运算
+# - 英文中部分符号的派生规则：在英文方案文件 melt_eng.schema.yaml > speller > algebra 修改为对应的双拼拼写运算
+# - 部件拆字的拼写规则：在部件拆字方案 radical_pinyin.schema.yaml > speller > algebra 修改为对应的双拼拼写运算
 # 打个补丁一劳永逸，补丁写法参考 [常见问题](https://github.com/iDvel/rime-ice/issues/133)
 
 
@@ -30,8 +29,9 @@ schema:
 
 
 # 开关
-# states: 方案选单显示的名称。可以注释掉，仍可以通过快捷键切换。
 # reset: 默认状态。注释掉后，切换窗口时不会重置到默认状态。
+# states: 方案选单显示的名称。可以注释掉，仍可以通过快捷键切换。
+# abbrev: 默认的缩写取 states 的第一个字符，abbrev 可自定义一个字符
 switches:
   - name: ascii_mode
     states: [ 中, Ａ ]
@@ -44,7 +44,7 @@ switches:
     reset: 1
   - name: full_shape
     states: [ 半角, 全角 ]
-  - name: single_char  # search.lua 的功能开关，辅码查词时是否单字优先
+  - name: search_single_char  # search.lua 的功能开关，辅码查词时是否单字优先
     abbrev: [词, 单]
     states: [正常, 单字]
 
@@ -53,8 +53,8 @@ switches:
 engine:
   processors:
     - lua_processor@select_character          # 以词定字
-    - lua_processor@auto_commit_single_punct  # 让写在 alphabet 中的某标点自动上屏
     - ascii_composer
+    - lua_processor@auto_commit_single_punct  # 让写在 alphabet 中的某标点自动上屏
     - recognizer
     - key_binder
     - speller
@@ -76,9 +76,11 @@ engine:
     - lua_translator@lunar              # 农历
     - table_translator@custom_phrase    # 自定义短语 custom_phrase_double.txt
     - table_translator@melt_eng         # 英文输入
+    - table_translator@cn_en            # 中英混合词汇
     - table_translator@radical_lookup   # 部件拆字反查
     - lua_translator@unicode            # Unicode
     - lua_translator@number_translator  # 数字、金额大写
+    - lua_translator@force_gc           # 暴力 GC
   filters:
     - lua_filter@corrector                          # 错音错字提示
     - simplifier@emoji                              # Emoji
@@ -130,58 +132,30 @@ reduce_english_filter:
   idx: 2        # 降低到第 idx 个位置
   # 自定义的单词列表，示例列表没有降低部分常用单词，如 and cat mail Mac but bad shit ……
   words: [aid, ann,
-  bail, bait, bam, band, bans, bat, bay, bend, bent, benz, bib, bid, bien, biz, boc, bop, bos, bud, buf,
-  cab, cad, cain, cam, cans, cap, cas, cef, chad, chan, chap, chef, cher, chew, chic, chin, chip, chit, coup, cum, cunt, cur,
+  bail, bait, bam, band, bans, bat, bay, bend, bent, benz, bib, bid, bien, biz, boc, bop, bos, bud, buf, bach, bench, bush,
+  cab, cad, cain, cam, cans, cap, cas, cef, chad, chan, chap, chef, cher, chew, chic, chin, chip, chit, coup, cum, cunt, cur, couch,
   dab, dag, dal, dam, dent, dew, dial, diet, dim, din, dip, dis, dit, doug, dub, dug, dunn,
   fab, fax, fob, fog, foul, fur,
   gag, gail, gain, gal, gam, gaol, ged, gel, ger, guam, gus, gut,
-  hail, ham, hank, hans, hat, hay, heil, heir, hem, hep, hud, hum, hung, hunk, hut,
+  hail, ham, hank, hans, hat, hay, heil, heir, hem, hep, hud, hum, hung, hunk, hut, hush,
   jim, jug,
   kat,
-  lab, lad, lag, laid, lam, laos, lap, lat, lax, lay, led, leg, lex, liam, lib, lid, lied, lien, lies, linn, lip, lit, liz, lob, lug, lund, lung, lux,
-  mag, maid, mann, mar, mat, med, mel, mend, mens, ment, mil, mins, mint, mob, moc, mod, mop, mos, mot, mud, mug, mum, nail,
-  nap, nat, nay, neil, nib, nip, noun, nous, nun, nut,
-  pac, paid, pail, pain, pair, pak, pal, pam, pans, pant, pap, par, pat, paw, pax, pens, pic, pier, pies, pins, pint, pit, pix, pod, pop, pos, pot, pour, pow, pub,
-  rand, rant, rent, rep, res, ret, rex, rib, rid, rig, rim, rub, rug, rum, runc, runs,
+  lab, lad, lag, laid, lam, laos, lap, lat, lax, lay, led, leg, lex, liam, lib, lid, lied, lien, lies, linn, lip, lit, liz, lob, lug, lund, lung, lux, lash, loch, lush,
+  mag, maid, mann, mar, mat, med, mel, mend, mens, ment, mil, mins, mint, mob, moc, mop, mos, mot, mud, mug, mum, mesh,
+  nap, nat, nay, neil, nib, nip, noun, nous, nun, nut, nail, nash,
+  pac, paid, pail, pain, pair, pak, pal, pam, pans, pant, pap, par, pat, paw, pax, pens, pic, pier, pies, pins, pint, pit, pix, pod, pop, pos, pot, pour, pow, pub, pinch, pouch,
+  rand, rant, rent, rep, res, ret, rex, rib, rid, rig, rim, rub, rug, rum, runc, runs, ranch,
   sac, sail, sal, sam, sans, sap, saw, sax, sew, sham, shaw, shin, sig, sin, sip, sis, suit, sung, suns, sup, sur, sus,
   tad, tail, taj, tar, tax, tec, ted, tel, ter, tex, tic, tied, tier, ties, tim, tin, tit, tour, tout, tum,
   wag, wand, womens, wap, wax, weir, won,
-  yan, yen]
+  yan, yen,
+  zach]
 
 
 # Lua 配置: 置顶候选项
-# 符合左边的 cand.preedit 时，按顺序置顶右边的候选项。只是提升已有候选项的顺序，没有自创编码的功能。
-# （对简繁转换无效，除非简繁文字一致 😰）
-#
-# preedit 是经过 translator/preedit_format 处理后的编码，如果是词语则包含空格。
-# ⚠️ 注意方案的 preedit_format 设定，如果 v 显示为 ü，那么左边也要写 ü
-# ⚠️ 双拼 ⚠️ 显示为全拼拼写就要写全拼，如 'shuang pin'，显示为双拼拼写就要写双拼，如 'ul pb' 😰
-#
-# 脚本自动额外生成 preedit 中最后一个空格后面的首字母和 zh ch sh，
-# 如 'ni hao' 会自动生成 'ni hao'、'ni h'
-# 如 'bu hao chi' 会自动生成 'bu hao chi'、'bu hao c'、'bu hao ch'
-# 如果同时写了 da zhuan 和 da zhong，输入 da z 时，排在前面的的优先，除非明确指定 'da z'。
+# 请参考 rime_ice.schema.yaml 中的注释
 pin_cand_filter:
   # 格式：编码<Tab>字词1<Space>字词2……
-  # 示例：
-  # - 'le	了'         # 输入 le 时，置顶「了」
-  # - 'la	啦'         # 输入 la 时，置顶「啦」
-  # - 'ta	他 她 它'    # 可以置顶多个字，按顺序排列
-  # - 'ta	啊'         # ❌ 编码不会产生的字词，不会生效且影响查找效率。自创编码的字词句可以写到 custom_phrase 中。
-  # - 'l	了 啦'      # 支持单编码或输入到一半的编码，输入 l 时，置顶「了、啦」
-  # - 's m	什么'       # 支持简拼，要和输入框的行为一致，有空格加空格
-  # - 'w s m	为什么' # 支持简拼，要和输入框的行为一致，有空格加空格
-  # - 'ni hao	你好 👋 拟好'  # 如果 emoji 被分割开了，可以任意调整 emoji 的位置
-  # # 以下两行，会额外生成 'da z' 'da zh' 的置顶，前两个候选项是「大专、大众」，先写的排在前面
-  # - da zhuang	大专
-  # - da zhong	大众
-  # # 如果明确定义了简码形式，则完全使用简码形式
-  # - da z	打字
-  # - da zh	打仗
-  # # ⚠️ 双拼
-  # - 'chong zhuang	重装'  # 保留现有的 preedit_format 时可用全拼
-  # - 'is vl	重装'      # 清空 preedit_format 时要用双拼拼写（示例为小鹤的）
-  # 如果有任意一个方案的 pin_cand_filter 为空则可能会在方案间串台，don't know why ...
   - d	的
 
 
@@ -227,6 +201,7 @@ translator:
     - "xform/(^|[ '])i/$1sh/"
     - xform/0(\w)/$1/          # 好了，現在可以把零聲母拿掉啦
     - xform/([nljqxy])v/$1ü/   # 這樣纔是漢語拼音 :-)
+    - xform/ü/v/  # ü 显示为 v
 
 
 # 次翻译器，英文
@@ -237,6 +212,18 @@ melt_eng:
   initial_quality: 1.1     # 初始权重
   comment_format:          # 自定义提示码
     - xform/.*//           # 清空提示码
+
+
+# 中英混合词汇
+cn_en:
+  dictionary: ""
+  user_dict: en_dicts/cn_en_ziguang
+  db_class: stabledb
+  enable_completion: true
+  enable_sentence: false
+  initial_quality: 1.1
+  comment_format:
+    - xform/^.+$//
 
 
 # 自定义短语
@@ -290,7 +277,9 @@ radical_lookup:
 # 部件拆字滤镜
 radical_reverse_lookup:
   tags: [ radical_lookup ]
-  dictionary: rime_ice  # 拼音标注来源，可将 other/single_pinyin.reverse.bin 拷贝至 build/ 目录，此处改为 single_pinyin 来为所有字显示拼音
+  # dictionary 为拼音标注来源。目前是显示本方案词库的注音，可去部件拆字方案下载更全的、带声调的、已编译好的词典
+  # https://github.com/mirtlecn/rime-radical-pinyin?tab=readme-ov-file#%E5%8F%8D%E6%9F%A5%E5%B8%A6%E5%A3%B0%E8%B0%83%E6%B3%A8%E9%9F%B3
+  dictionary: rime_ice
   # comment_format:     # 自定义 comment，例如在左右加上括号
   #  - xform/^/(/
   #  - xform/$/)/
