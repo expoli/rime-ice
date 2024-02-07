@@ -78,7 +78,6 @@ is_in_user_dict = require("is_in_user_dict")
 cold_word_drop_processor = require("cold_word_drop.processor")
 cold_word_drop_filter = require("cold_word_drop.filter")
 
-
 -- 暴力 GC
 -- 详情 https://github.com/hchunhui/librime-lua/issues/307
 -- 这样也不会导致卡顿，那就每次都调用一下吧，内存稳稳的
@@ -98,3 +97,8 @@ function debug_checker(input, env)
 		))
 	end
 end
+
+-- RIME 输入法辅助码与音形分离插件
+-- engine/filters/+ 增加 - lua_filter@aux_code@rime_lua_aux_code/lua/flypy_full
+-- 第二个 @ 后面的是辅助码文件路径，可以自定义
+aux_code = require("rime_lua_aux_code.lua.aux_code")
