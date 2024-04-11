@@ -7,7 +7,7 @@
 #
 ---
 name: en_ext
-version: "2024-02-27"
+version: "2024-04-06"
 sort: by_weight
 ...
 # 一些杂项
@@ -938,6 +938,7 @@ WSGI	WSGI
 BTC	BTC
 Bitcoin	BTC
 Bitcoin	Bitcoin
+Blockchain	Blockchain
 gank	gank
 debuff	debuff
 MagSafe	MagSafe
@@ -1392,6 +1393,7 @@ refactoring	refactoring
 refactor	refactor
 Notepad	Notepad
 Notepad++	Notepad++
+Notepad++	npp
 O'Reilly	O'Reilly
 Octocat	Octocat
 IMAP	IMAP
@@ -2155,6 +2157,7 @@ pranksters	pranksters
 npm	npm
 Node Package Manager	npm
 Node Package Manager	NodePackageManager
+.npmrc	.npmrc
 Apple Vision	AppleVision
 Apple Vision Pro	AppleVisionPro
 Vision Pro	VisionPro
@@ -2179,6 +2182,8 @@ personalization	personalization
 K8s	K8s
 Kubernetes	K8s
 Kubernetes	Kubernetes
+Kubeadm	Kubeadm
+Minikube	Minikube
 containerized	containerized
 shitty	shitty
 shitwork	shitwork
@@ -2423,6 +2428,7 @@ punctuator	punctuator
 punctuators	punctuators
 QR code	QRcode
 sentry	sentry
+Prometheus	Prometheus
 Grafana	Grafana
 Mirtle	Mirtle
 Hadoop	Hadoop
@@ -2456,3 +2462,18 @@ Theseus	Theseus
 Laravel	Laravel
 monolith	monolith
 Chiikawa	Chiikawa
+trudge	trudge
+LibreOffice	LibreOffice
+Asics	Asics
+dubbing	dubbing
+nvm	nvm
+Node Version Manager	nvm
+Node Version Manager	NodeVersionManager
+Prettier	Prettier
+ESLint	ESLint
+Hibernate	Hibernate
+MyBatis	MyBatis
+MyBatis-Plus	MyBatis-Plus
+Spring Boot	SpringBoot
+Spring Cloud	SpringCloud
+Element Plus	ElementPlus
