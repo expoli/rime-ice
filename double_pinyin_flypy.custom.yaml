@@ -5,6 +5,25 @@ patch:
     - lua_filter@is_in_user_dict
     # - lua_filter@*aux_code@ZRM_Aux-code_4.3
     # - lua_filter@*aux_code@flypy_full
+  engine/processors/@before 0+: predictor
+  engine/translators/+@before 0+: predict_translator
+
+  switches/+:
+    - name: prediction
+      states: [ 关闭预测, 开启预测 ]
+      reset: 1
+
+  predictor:
+  # predict db file in user directory/shared directory
+  # default to 'predict.db'
+    db: predict.db
+  # max prediction candidates every time
+  # default to 0, which means showing all candidates
+  # you may set it the same with page_size so that period doesn't trigger next page
+    max_candidates: 5
+  # max continuous prediction times
+  # default to 0, which means no limitation
+    max_iterations: 1
 
   # 允许以 `;` 符号上屏，最后的 `;` 为英文半角字符，非中文全角。前面部分根据个人配置自行调整
   speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA/
