@@ -5,9 +5,6 @@ patch:
     - lua_filter@is_in_user_dict
     # - lua_filter@*aux_code@ZRM_Aux-code_4.3
     # - lua_filter@*aux_code@flypy_full
-  engine/processors/@before 0+: predictor
-  engine/translators/+@before 0+: predict_translator
-
   switches/+:
     - name: prediction
       states: [ 关闭预测, 开启预测 ]

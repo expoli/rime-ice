@@ -52,6 +52,7 @@ switches:
 # 输入引擎
 engine:
   processors:
+    - predictor
     - lua_processor@select_character          # 以词定字
     - ascii_composer
     - recognizer
@@ -69,6 +70,7 @@ engine:
     - punct_segmentor
     - fallback_segmentor
   translators:
+    - predict_translator
     - punct_translator
     - script_translator
     - lua_translator@date_translator    # 时间、日期、星期
