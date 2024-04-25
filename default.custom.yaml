@@ -8,3 +8,4 @@ patch:
   schema_list:
     - {schema: double_pinyin_flypy}
     - {schema: rime_ice}
+    - {schema: radical_pinyin}

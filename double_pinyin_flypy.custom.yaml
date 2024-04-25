@@ -5,29 +5,14 @@ patch:
     - lua_filter@is_in_user_dict
     # - lua_filter@*aux_code@ZRM_Aux-code_4.3
     # - lua_filter@*aux_code@flypy_full
-  switches/+:
-    - name: prediction
-      states: [ 关闭预测, 开启预测 ]
-      reset: 1
-
-  predictor:
-  # predict db file in user directory/shared directory
-  # default to 'predict.db'
-    db: predict.db
-  # max prediction candidates every time
-  # default to 0, which means showing all candidates
-  # you may set it the same with page_size so that period doesn't trigger next page
-    max_candidates: 5
-  # max continuous prediction times
-  # default to 0, which means no limitation
-    max_iterations: 1
 
   # 允许以 `;` 符号上屏，最后的 `;` 为英文半角字符，非中文全角。前面部分根据个人配置自行调整
-  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA/
+  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA/`
   
   # 自定义触发键，注意：请确保所选字符已包含在上述 speller/alphabet 的值中
   key_binder/+:
     aux_code_trigger: "/"
+    search: "`" # 此为辅码引导键
 
   is_in_user_dict: true
 
