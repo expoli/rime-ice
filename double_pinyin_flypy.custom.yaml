@@ -13,6 +13,10 @@ patch:
   key_binder/+:
     aux_code_trigger: "/"
     search: "`" # 此为辅码引导键
+    bindings/+:
+     - {when: has_menu, accept: 0, send: Control+Delete}
+    # - {when: has_menu, accept: Right, send: Down}
+     #- {when: has_menu, accept: Left, send: Up}
 
   is_in_user_dict: true
 
