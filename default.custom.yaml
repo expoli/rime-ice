@@ -7,6 +7,12 @@ customization:
 patch:
   schema_list:
     - {schema: double_pinyin}
-    - {schema: double_pinyin_flypy}
     - {schema: rime_ice}
     - {schema: radical_pinyin}
+    - {schema: moran}
+    - {schema: moran_fixed}
+    - {schema: moran_sentence}
+    - {schema: moran_aux}
+    - {schema: moran_bj}
+    - {schema: tiger}
+
