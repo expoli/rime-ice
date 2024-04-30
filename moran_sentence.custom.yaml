@@ -13,7 +13,7 @@ patch:
   is_in_user_dict: true
   
   # Lua 配置：农历
-  lunar: NL  # 癸卯年(兔)冬月廿一  二〇二四年冬月廿一
+  lunar: tnl  # 癸卯年(兔)冬月廿一  二〇二四年冬月廿一
 
   # 处理符合特定规则的输入码，如网址、反查
   recognizer:
